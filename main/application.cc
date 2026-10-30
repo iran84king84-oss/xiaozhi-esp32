@@ -805,43 +805,70 @@ void Application::StopListening() { xEventGroupSetBits(event_group_, MAIN_EVENT_
 void Application::HandleToggleChatEvent() {
     auto state = GetDeviceState();
 
-    // Wake up from sleep
+    // بیدار شدن از خواب
     if (sleep_mode_) {
-    sleep_mode_ = false;
-    ESP_LOGI(TAG, "Robot waking up");
+        ESP_LOGI(TAG, "Robot waking up");
 
-    if (!protocol_) {
-        ESP_LOGE(TAG, "Protocol not initialized");
+        if (!protocol_) {
+            ESP_LOGE(TAG, "Protocol not initialized");
+            return;
+        }
+
+        sleep_mode_ = false;
+
+        ListeningMode mode = GetDefaultListeningMode();
+
+        if (!protocol_->IsAudioChannelOpened()) {
+            SetDeviceState(kDeviceStateConnecting);
+
+            Schedule([this, mode]() {
+                ContinueOpenAudioChannel(mode);
+            });
+        } else {
+            SetListeningMode(mode);
+        }
+
         return;
     }
 
-    ListeningMode mode = GetDefaultListeningMode();
-
-    if (!protocol_->IsAudioChannelOpened()) {
-        SetDeviceState(kDeviceStateConnecting);
-        Schedule([this, mode]() {
-            ContinueOpenAudioChannel(mode);
-        });
-    } else {
-        SetListeningMode(mode);
-    }
-
-    return;
-}
-
+    // توقف اعلان
     if (state == kDeviceStateNotifying) {
         StopNotification();
-        state = kDeviceStateIdle;
+        return;
     }
 
+    // ورود به حالت خواب
+    if (state == kDeviceStateListening ||
+        state == kDeviceStateSpeaking) {
+
+        ESP_LOGI(TAG, "Robot entering sleep mode");
+
+        sleep_mode_ = true;
+
+        audio_service_.EnableVoiceProcessing(false);
+        audio_service_.EnableWakeWordDetection(false);
+
+        if (protocol_ && protocol_->IsAudioChannelOpened()) {
+            protocol_->CloseAudioChannel();
+        }
+
+        SetDeviceState(kDeviceStateIdle);
+        return;
+    }
+
+    // سایر حالت‌ها
     if (state == kDeviceStateActivating) {
         SetDeviceState(kDeviceStateIdle);
         return;
-    } else if (state == kDeviceStateWifiConfiguring) {
+    }
+
+    if (state == kDeviceStateWifiConfiguring) {
         audio_service_.EnableAudioTesting(true);
         SetDeviceState(kDeviceStateAudioTesting);
         return;
-    } else if (state == kDeviceStateAudioTesting) {
+    }
+
+    if (state == kDeviceStateAudioTesting) {
         audio_service_.EnableAudioTesting(false);
         SetDeviceState(kDeviceStateWifiConfiguring);
         return;
@@ -852,39 +879,21 @@ void Application::HandleToggleChatEvent() {
         return;
     }
 
-    // Enter sleep
-    if (state == kDeviceStateListening ||
-        state == kDeviceStateSpeaking) {
-
-        sleep_mode_ = true;
-        ESP_LOGI(TAG, "Robot entering sleep mode");
-
-        audio_service_.EnableVoiceProcessing(false);
-        audio_service_.EnableWakeWordDetection(false);
-
-        protocol_->CloseAudioChannel();
-        SetDeviceState(kDeviceStateIdle);
-        return;
-    }
-
+    // شروع مکالمه از حالت عادی
     if (state == kDeviceStateIdle) {
         ListeningMode mode = GetDefaultListeningMode();
 
         if (!protocol_->IsAudioChannelOpened()) {
             SetDeviceState(kDeviceStateConnecting);
+
             Schedule([this, mode]() {
                 ContinueOpenAudioChannel(mode);
             });
+
             return;
         }
 
         SetListeningMode(mode);
-
-    } else if (state == kDeviceStateSpeaking) {
-        AbortSpeaking(kAbortReasonNone);
-
-    } else if (state == kDeviceStateListening) {
-        protocol_->CloseAudioChannel();
     }
 }
 void Application::ContinueOpenAudioChannel(ListeningMode mode) {
