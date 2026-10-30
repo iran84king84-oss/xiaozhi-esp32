@@ -804,7 +804,12 @@ void Application::StopListening() { xEventGroupSetBits(event_group_, MAIN_EVENT_
 
 void Application::HandleToggleChatEvent() {
     auto state = GetDeviceState();
-
+if (sleep_mode_) {
+    sleep_mode_ = false;
+    ESP_LOGI(TAG, "Robot waking up");
+    SetDeviceState(kDeviceStateIdle);
+    return;
+}
     if (state == kDeviceStateNotifying) {
         StopNotification();
         state = kDeviceStateIdle;
@@ -828,6 +833,14 @@ void Application::HandleToggleChatEvent() {
         return;
     }
 
+    ESP_LOGI(TAG, "Robot entering sleep mode");
+
+    audio_service_.EnableVoiceProcessing(false);
+    audio_service_.EnableWakeWordDetection(false);
+
+    SetDeviceState(kDeviceStateIdle);
+    return;
+}
     if (state == kDeviceStateIdle) {
         ListeningMode mode = GetDefaultListeningMode();
         if (!protocol_->IsAudioChannelOpened()) {
