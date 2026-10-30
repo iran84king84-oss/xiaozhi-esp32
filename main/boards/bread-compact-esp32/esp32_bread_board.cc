@@ -116,15 +116,16 @@ private:
             std::string wake_word="你好小智";
             Application::GetInstance().WakeWordInvoke(wake_word);
         });
+touch_button_.OnDoubleClick([this]() {
+    auto& app = Application::GetInstance();
 
-        touch_button_.OnPressDown([this]() {
-            gpio_set_level(BUILTIN_LED_GPIO, 1);
-            Application::GetInstance().StartListening();
-        });
-        touch_button_.OnPressUp([this]() {
-            gpio_set_level(BUILTIN_LED_GPIO, 0);
-            Application::GetInstance().StopListening();
-        });
+    ESP_LOGI(TAG, "Touch double click");
+
+    gpio_set_level(BUILTIN_LED_GPIO, 1);
+    app.ToggleChatState();
+});
+       
+     
     }
 
     // 物联网初始化，添加对 AI 可见设备
