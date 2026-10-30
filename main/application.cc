@@ -807,11 +807,27 @@ void Application::HandleToggleChatEvent() {
 
     // Wake up from sleep
     if (sleep_mode_) {
-        sleep_mode_ = false;
-        ESP_LOGI(TAG, "Robot waking up");
-        SetDeviceState(kDeviceStateIdle);
+    sleep_mode_ = false;
+    ESP_LOGI(TAG, "Robot waking up");
+
+    if (!protocol_) {
+        ESP_LOGE(TAG, "Protocol not initialized");
         return;
     }
+
+    ListeningMode mode = GetDefaultListeningMode();
+
+    if (!protocol_->IsAudioChannelOpened()) {
+        SetDeviceState(kDeviceStateConnecting);
+        Schedule([this, mode]() {
+            ContinueOpenAudioChannel(mode);
+        });
+    } else {
+        SetListeningMode(mode);
+    }
+
+    return;
+}
 
     if (state == kDeviceStateNotifying) {
         StopNotification();
