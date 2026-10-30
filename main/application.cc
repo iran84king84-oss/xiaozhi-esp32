@@ -804,12 +804,15 @@ void Application::StopListening() { xEventGroupSetBits(event_group_, MAIN_EVENT_
 
 void Application::HandleToggleChatEvent() {
     auto state = GetDeviceState();
-if (sleep_mode_) {
-    sleep_mode_ = false;
-    ESP_LOGI(TAG, "Robot waking up");
-    SetDeviceState(kDeviceStateIdle);
-    return;
-}
+
+    // Wake up from sleep
+    if (sleep_mode_) {
+        sleep_mode_ = false;
+        ESP_LOGI(TAG, "Robot waking up");
+        SetDeviceState(kDeviceStateIdle);
+        return;
+    }
+
     if (state == kDeviceStateNotifying) {
         StopNotification();
         state = kDeviceStateIdle;
@@ -833,30 +836,41 @@ if (sleep_mode_) {
         return;
     }
 
-    ESP_LOGI(TAG, "Robot entering sleep mode");
+    // Enter sleep
+    if (state == kDeviceStateListening ||
+        state == kDeviceStateSpeaking) {
 
-    audio_service_.EnableVoiceProcessing(false);
-    audio_service_.EnableWakeWordDetection(false);
+        sleep_mode_ = true;
+        ESP_LOGI(TAG, "Robot entering sleep mode");
 
-    SetDeviceState(kDeviceStateIdle);
-    return;
-}
+        audio_service_.EnableVoiceProcessing(false);
+        audio_service_.EnableWakeWordDetection(false);
+
+        protocol_->CloseAudioChannel();
+        SetDeviceState(kDeviceStateIdle);
+        return;
+    }
+
     if (state == kDeviceStateIdle) {
         ListeningMode mode = GetDefaultListeningMode();
+
         if (!protocol_->IsAudioChannelOpened()) {
             SetDeviceState(kDeviceStateConnecting);
-            // Schedule to let the state change be processed first (UI update)
-            Schedule([this, mode]() { ContinueOpenAudioChannel(mode); });
+            Schedule([this, mode]() {
+                ContinueOpenAudioChannel(mode);
+            });
             return;
         }
+
         SetListeningMode(mode);
+
     } else if (state == kDeviceStateSpeaking) {
         AbortSpeaking(kAbortReasonNone);
+
     } else if (state == kDeviceStateListening) {
         protocol_->CloseAudioChannel();
     }
 }
-
 void Application::ContinueOpenAudioChannel(ListeningMode mode) {
     // Check state again in case it was changed during scheduling
     if (GetDeviceState() != kDeviceStateConnecting) {
