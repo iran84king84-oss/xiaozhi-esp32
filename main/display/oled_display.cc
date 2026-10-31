@@ -337,6 +337,8 @@ void OledDisplay::UpdateEyes() {
         case 3: eye_height = 28; break; // Surprised
         case 4: eye_height = 12; break; // Sleepy
         case 5: eye_height = 17; break; // Angry
+        case 6: eye_height = 32; break; // Listening
+        case 7: eye_height = 24; break; // Speaking
         default: eye_height = 28; break;
     }
 
