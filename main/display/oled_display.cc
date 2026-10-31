@@ -103,6 +103,10 @@ void OledDisplay::SetupUI() {
 }
 
 OledDisplay::~OledDisplay() {
+  if (eyes_timer_ != nullptr) {
+    lv_timer_delete(eyes_timer_);
+    eyes_timer_ = nullptr;
+}
     if (content_ != nullptr) {
         lv_obj_del(content_);
     }
