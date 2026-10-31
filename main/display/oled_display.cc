@@ -191,135 +191,166 @@ void OledDisplay::SetupUI_128x64() {
     DisplayLockGuard lock(this);
 
     auto lvgl_theme = static_cast<LvglTheme*>(current_theme_);
-    auto text_font = lvgl_theme->text_font()->font();
     auto icon_font = lvgl_theme->icon_font()->font();
-    auto large_icon_font = lvgl_theme->large_icon_font()->font();
 
     auto screen = lv_screen_active();
-    lv_obj_set_style_text_font(screen, text_font, 0);
-    lv_obj_set_style_text_color(screen, lv_color_black(), 0);
 
-    /* Container */
+    // Black OLED background
+    lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, 0);
+    lv_obj_set_style_text_color(screen, lv_color_white(), 0);
+
+    /* Main container */
     container_ = lv_obj_create(screen);
     lv_obj_set_size(container_, LV_HOR_RES, LV_VER_RES);
-    lv_obj_set_flex_flow(container_, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_style_pad_all(container_, 0, 0);
+    lv_obj_set_style_bg_opa(container_, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(container_, 0, 0);
+    lv_obj_set_style_pad_all(container_, 0, 0);
     lv_obj_set_style_pad_row(container_, 0, 0);
+    lv_obj_set_flex_flow(container_, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_scrollbar_mode(container_, LV_SCROLLBAR_MODE_OFF);
 
-    /* Layer 1: Top bar - for status icons */
+    /* Top bar: Wi-Fi only */
     top_bar_ = lv_obj_create(container_);
-    lv_obj_set_size(top_bar_, LV_HOR_RES, 16);
-    lv_obj_set_style_radius(top_bar_, 0, 0);
+    lv_obj_set_size(top_bar_, LV_HOR_RES, 14);
     lv_obj_set_style_bg_opa(top_bar_, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(top_bar_, 0, 0);
     lv_obj_set_style_pad_all(top_bar_, 0, 0);
     lv_obj_set_flex_flow(top_bar_, LV_FLEX_FLOW_ROW);
-    lv_obj_set_flex_align(top_bar_, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER,
-                          LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_flex_align(top_bar_, LV_FLEX_ALIGN_SPACE_BETWEEN,
+                          LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_scrollbar_mode(top_bar_, LV_SCROLLBAR_MODE_OFF);
 
     network_label_ = lv_label_create(top_bar_);
     lv_label_set_text(network_label_, "");
     lv_obj_set_style_text_font(network_label_, icon_font, 0);
+    lv_obj_set_style_text_color(network_label_, lv_color_white(), 0);
 
+    // Keep these objects for compatibility with the base display class,
+    // but hide them so they never appear on the OLED.
     lv_obj_t* right_icons = lv_obj_create(top_bar_);
     lv_obj_set_size(right_icons, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
     lv_obj_set_style_bg_opa(right_icons, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(right_icons, 0, 0);
     lv_obj_set_style_pad_all(right_icons, 0, 0);
-    lv_obj_set_flex_flow(right_icons, LV_FLEX_FLOW_ROW);
-    lv_obj_set_flex_align(right_icons, LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_CENTER,
-                          LV_FLEX_ALIGN_CENTER);
+    lv_obj_add_flag(right_icons, LV_OBJ_FLAG_HIDDEN);
 
     mute_label_ = lv_label_create(right_icons);
-    lv_label_set_text(mute_label_, "");
-    lv_obj_set_style_text_font(mute_label_, icon_font, 0);
-
     battery_label_ = lv_label_create(right_icons);
-    lv_label_set_text(battery_label_, "");
-    lv_obj_set_style_text_font(battery_label_, icon_font, 0);
 
-    /* Layer 2: Status bar - for center text labels */
+    /* Hidden status labels */
     status_bar_ = lv_obj_create(screen);
     lv_obj_set_size(status_bar_, LV_HOR_RES, 16);
-    lv_obj_set_style_radius(status_bar_, 0, 0);
-    lv_obj_set_style_bg_opa(status_bar_, LV_OPA_TRANSP, 0);  // Transparent background
+    lv_obj_set_style_bg_opa(status_bar_, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(status_bar_, 0, 0);
     lv_obj_set_style_pad_all(status_bar_, 0, 0);
-    lv_obj_set_scrollbar_mode(status_bar_, LV_SCROLLBAR_MODE_OFF);
-    lv_obj_set_style_layout(status_bar_, LV_LAYOUT_NONE, 0);  // Use absolute positioning
-    lv_obj_align(status_bar_, LV_ALIGN_TOP_MID, 0, 0);        // Overlap with top_bar_
-
-    notification_label_ = lv_label_create(status_bar_);
-    lv_obj_set_width(notification_label_, LV_HOR_RES);
-    lv_obj_set_style_text_align(notification_label_, LV_TEXT_ALIGN_CENTER, 0);
-    lv_label_set_text(notification_label_, "");
-    lv_obj_align(notification_label_, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_add_flag(notification_label_, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(status_bar_, LV_OBJ_FLAG_HIDDEN);
 
     status_label_ = lv_label_create(status_bar_);
-    lv_obj_set_width(status_label_, LV_HOR_RES);
-    lv_label_set_long_mode(status_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
-    lv_obj_set_style_text_align(status_label_, LV_TEXT_ALIGN_CENTER, 0);
-    lv_label_set_text(status_label_, Lang::Strings::INITIALIZING);
-    lv_obj_align(status_label_, LV_ALIGN_CENTER, 0, 0);
+    notification_label_ = lv_label_create(status_bar_);
+    lv_obj_add_flag(status_label_, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(notification_label_, LV_OBJ_FLAG_HIDDEN);
 
-    /* Content */
+    /* Eyes area */
     content_ = lv_obj_create(container_);
-    lv_obj_set_scrollbar_mode(content_, LV_SCROLLBAR_MODE_OFF);
-    lv_obj_set_style_radius(content_, 0, 0);
-    lv_obj_set_style_pad_all(content_, 0, 0);
     lv_obj_set_width(content_, LV_HOR_RES);
     lv_obj_set_flex_grow(content_, 1);
+    lv_obj_set_style_bg_opa(content_, LV_OPA_TRANSP, 0);
+    lv_obj_set_style_border_width(content_, 0, 0);
+    lv_obj_set_style_pad_all(content_, 0, 0);
     lv_obj_set_flex_flow(content_, LV_FLEX_FLOW_ROW);
-    lv_obj_set_style_flex_main_place(content_, LV_FLEX_ALIGN_CENTER, 0);
+    lv_obj_set_flex_align(content_, LV_FLEX_ALIGN_CENTER,
+                          LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_style_pad_column(content_, 12, 0);
+    lv_obj_set_scrollbar_mode(content_, LV_SCROLLBAR_MODE_OFF);
 
-    content_left_ = lv_obj_create(content_);
-    lv_obj_set_size(content_left_, 32, LV_SIZE_CONTENT);
-    lv_obj_set_style_pad_all(content_left_, 0, 0);
-    lv_obj_set_style_border_width(content_left_, 0, 0);
+    /* Left eye */
+    left_eye_ = lv_obj_create(content_);
+    lv_obj_set_size(left_eye_, 42, 28);
+    lv_obj_set_style_radius(left_eye_, LV_RADIUS_CIRCLE, 0);
+    lv_obj_set_style_bg_color(left_eye_, lv_color_white(), 0);
+    lv_obj_set_style_bg_opa(left_eye_, LV_OPA_COVER, 0);
+    lv_obj_set_style_border_width(left_eye_, 0, 0);
+    lv_obj_set_style_pad_all(left_eye_, 0, 0);
 
-    emotion_label_ = lv_label_create(content_left_);
-    lv_obj_set_style_text_font(emotion_label_, large_icon_font, 0);
-    lv_label_set_text(emotion_label_, MATERIAL_SYMBOLS_ROBOT_2);
-    lv_obj_center(emotion_label_);
-    lv_obj_set_style_pad_top(emotion_label_, 8, 0);
+    left_pupil_ = lv_obj_create(left_eye_);
+    lv_obj_set_size(left_pupil_, 12, 12);
+    lv_obj_set_style_radius(left_pupil_, LV_RADIUS_CIRCLE, 0);
+    lv_obj_set_style_bg_color(left_pupil_, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(left_pupil_, LV_OPA_COVER, 0);
+    lv_obj_set_style_border_width(left_pupil_, 0, 0);
+    lv_obj_center(left_pupil_);
 
-    content_right_ = lv_obj_create(content_);
-    lv_obj_set_size(content_right_, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-    lv_obj_set_style_pad_all(content_right_, 0, 0);
-    lv_obj_set_style_border_width(content_right_, 0, 0);
-    lv_obj_set_flex_grow(content_right_, 1);
-    lv_obj_add_flag(content_right_, LV_OBJ_FLAG_HIDDEN);
+    /* Right eye */
+    right_eye_ = lv_obj_create(content_);
+    lv_obj_set_size(right_eye_, 42, 28);
+    lv_obj_set_style_radius(right_eye_, LV_RADIUS_CIRCLE, 0);
+    lv_obj_set_style_bg_color(right_eye_, lv_color_white(), 0);
+    lv_obj_set_style_bg_opa(right_eye_, LV_OPA_COVER, 0);
+    lv_obj_set_style_border_width(right_eye_, 0, 0);
+    lv_obj_set_style_pad_all(right_eye_, 0, 0);
 
-    chat_message_label_ = lv_label_create(content_right_);
-    lv_label_set_text(chat_message_label_, "");
-    lv_label_set_long_mode(chat_message_label_, LV_LABEL_LONG_SCROLL_CIRCULAR);
-    lv_obj_set_style_text_align(chat_message_label_, LV_TEXT_ALIGN_LEFT, 0);
-    lv_obj_set_width(chat_message_label_, width_ - 32);
-    lv_obj_set_style_pad_top(chat_message_label_, 14, 0);
+    right_pupil_ = lv_obj_create(right_eye_);
+    lv_obj_set_size(right_pupil_, 12, 12);
+    lv_obj_set_style_radius(right_pupil_, LV_RADIUS_CIRCLE, 0);
+    lv_obj_set_style_bg_color(right_pupil_, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(right_pupil_, LV_OPA_COVER, 0);
+    lv_obj_set_style_border_width(right_pupil_, 0, 0);
+    lv_obj_center(right_pupil_);
 
-    // Start scrolling subtitle after a delay
-    static lv_anim_t a;
-    lv_anim_init(&a);
-    lv_anim_set_delay(&a, 1000);
-    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
-    lv_obj_set_style_anim(chat_message_label_, &a, LV_PART_MAIN);
-    lv_obj_set_style_anim_duration(chat_message_label_, lv_anim_speed_clamped(60, 300, 60000),
-                                   LV_PART_MAIN);
-
+    /* Keep the low-battery objects available, but hidden */
     low_battery_popup_ = lv_obj_create(screen);
-    lv_obj_set_scrollbar_mode(low_battery_popup_, LV_SCROLLBAR_MODE_OFF);
-    lv_obj_set_size(low_battery_popup_, LV_HOR_RES * 0.9, text_font->line_height * 2);
-    lv_obj_align(low_battery_popup_, LV_ALIGN_BOTTOM_MID, 0, 0);
-    lv_obj_set_style_bg_color(low_battery_popup_, lv_color_black(), 0);
-    lv_obj_set_style_radius(low_battery_popup_, 10, 0);
-    low_battery_label_ = lv_label_create(low_battery_popup_);
-    lv_label_set_text(low_battery_label_, Lang::Strings::BATTERY_NEED_CHARGE);
-    lv_obj_set_style_text_color(low_battery_label_, lv_color_white(), 0);
-    lv_obj_center(low_battery_label_);
     lv_obj_add_flag(low_battery_popup_, LV_OBJ_FLAG_HIDDEN);
+
+    low_battery_label_ = lv_label_create(low_battery_popup_);
+    lv_obj_add_flag(low_battery_label_, LV_OBJ_FLAG_HIDDEN);
+
+    /* Start eye animation */
+    eyes_timer_ = lv_timer_create(EyesTimerCallback, 100, this);
+}
+
+void OledDisplay::EyesTimerCallback(lv_timer_t* timer) {
+    auto* self = static_cast<OledDisplay*>(lv_timer_get_user_data(timer));
+    if (self == nullptr) {
+        return;
+    }
+
+    self->eyes_animation_tick_++;
+    self->UpdateEyes();
+}
+
+void OledDisplay::UpdateEyes() {
+    if (left_eye_ == nullptr || right_eye_ == nullptr ||
+        left_pupil_ == nullptr || right_pupil_ == nullptr) {
+        return;
+    }
+
+    int eye_height = 28;
+
+    switch (eyes_expression_) {
+        case 1: eye_height = 23; break; // Happy
+        case 2: eye_height = 19; break; // Sad
+        case 3: eye_height = 36; break; // Surprised
+        case 4: eye_height = 12; break; // Sleepy
+        case 5: eye_height = 17; break; // Angry
+        default: eye_height = 28; break;
+    }
+
+    // Blink briefly about every five seconds
+    int blink_phase = eyes_animation_tick_ % 50;
+    eyes_blinking_ = (blink_phase >= 48);
+
+    if (eyes_blinking_) {
+        lv_obj_set_height(left_eye_, 3);
+        lv_obj_set_height(right_eye_, 3);
+        lv_obj_add_flag(left_pupil_, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(right_pupil_, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_set_height(left_eye_, eye_height);
+        lv_obj_set_height(right_eye_, eye_height);
+        lv_obj_remove_flag(left_pupil_, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_remove_flag(right_pupil_, LV_OBJ_FLAG_HIDDEN);
+    }
 }
 
 void OledDisplay::SetupUI_128x32() {
