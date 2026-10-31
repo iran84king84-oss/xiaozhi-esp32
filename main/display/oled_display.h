@@ -18,8 +18,22 @@ private:
     lv_obj_t* content_right_ = nullptr;
     lv_obj_t* container_ = nullptr;
     lv_obj_t* side_bar_ = nullptr;
-    lv_obj_t* emotion_label_ = nullptr;
-    lv_obj_t* chat_message_label_ = nullptr;
+   lv_obj_t* emotion_label_ = nullptr;
+lv_obj_t* chat_message_label_ = nullptr;
+
+// Animated robot eyes
+lv_obj_t* left_eye_ = nullptr;
+lv_obj_t* right_eye_ = nullptr;
+
+lv_timer_t* eyes_timer_ = nullptr;
+lv_obj_t* left_pupil_ = nullptr;
+lv_obj_t* right_pupil_ = nullptr;
+int eyes_animation_tick_ = 0;
+int eyes_expression_ = 0;
+bool eyes_blinking_ = false;
+
+void UpdateEyes();
+static void EyesTimerCallback(lv_timer_t* timer);
 
     virtual bool Lock(int timeout_ms = 0) override;
     virtual void Unlock() override;
