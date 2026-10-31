@@ -334,14 +334,14 @@ void OledDisplay::UpdateEyes() {
     switch (eyes_expression_) {
         case 1: eye_height = 23; break; // Happy
         case 2: eye_height = 19; break; // Sad
-        case 3: eye_height = 36; break; // Surprised
+        case 3: eye_height = 28; break; // Surprised
         case 4: eye_height = 12; break; // Sleepy
         case 5: eye_height = 17; break; // Angry
         default: eye_height = 28; break;
     }
 
     // Blink briefly about every five seconds
-    int blink_phase = eyes_animation_tick_ % 50;
+    int blink_phase = eyes_animation_tick_ % 60;
     eyes_blinking_ = (blink_phase >= 48);
 
     if (eyes_blinking_) {
