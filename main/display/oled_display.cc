@@ -346,36 +346,58 @@ void OledDisplay::UpdateEyes() {
         return;
     }
 
-    int eye_height = 28;
+    int eye_height = 32;
 
     switch (eyes_expression_) {
-        case 1: eye_height = 23; break; // Happy
-        case 2: eye_height = 19; break; // Sad
-        case 3: eye_height = 28; break; // Surprised
-        case 4: eye_height = 12; break; // Sleepy
-        case 5: eye_height = 17; break; // Angry
-        case 6: eye_height = 32; break; // Listening
-        case 7: eye_height = 24; break; // Speaking
-        default: eye_height = 28; break;
+        case 1: eye_height = 25; break; // خوشحال
+        case 2: eye_height = 22; break; // ناراحت
+        case 3: eye_height = 36; break; // متعجب
+        case 4: eye_height = 13; break; // خواب‌آلود
+        case 5: eye_height = 20; break; // عصبانی
+        case 6: eye_height = 34; break; // گوش دادن
+        case 7: eye_height = 29; break; // صحبت کردن
+        default: eye_height = 32; break;
     }
 
-    // Blink briefly about every five seconds
-    int blink_phase = eyes_animation_tick_ % 60;
-    eyes_blinking_ = (blink_phase >= 48);
+    // پلک‌زدن کوتاه و طبیعی
+    int blink_phase = eyes_animation_tick_ % 55;
+    eyes_blinking_ = (blink_phase >= 53);
 
     if (eyes_blinking_) {
         lv_obj_set_height(left_eye_, 3);
         lv_obj_set_height(right_eye_, 3);
+
         lv_obj_add_flag(left_pupil_, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(right_pupil_, LV_OBJ_FLAG_HIDDEN);
-    } else {
-        lv_obj_set_height(left_eye_, eye_height);
-        lv_obj_set_height(right_eye_, eye_height);
-        lv_obj_remove_flag(left_pupil_, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_remove_flag(right_pupil_, LV_OBJ_FLAG_HIDDEN);
+        return;
     }
-}
 
+    lv_obj_set_height(left_eye_, eye_height);
+    lv_obj_set_height(right_eye_, eye_height);
+
+    lv_obj_remove_flag(left_pupil_, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_flag(right_pupil_, LV_OBJ_FLAG_HIDDEN);
+
+    // حرکت آرام مردمک‌ها برای نگاه کردن به اطراف
+    int look_phase = (eyes_animation_tick_ / 20) % 3;
+
+    int look_x = 0;
+
+    if (look_phase == 1) {
+        look_x = -5;
+    } else if (look_phase == 2) {
+        look_x = 5;
+    }
+
+    int pupil_y = (eye_height - 14) / 2;
+
+    if (eyes_expression_ == 2) {
+        pupil_y += 2;
+    }
+
+    lv_obj_set_pos(left_pupil_, 16 + look_x, pupil_y);
+    lv_obj_set_pos(right_pupil_, 16 + look_x, pupil_y);
+}
 void OledDisplay::SetupUI_128x32() {
     DisplayLockGuard lock(this);
 
