@@ -199,30 +199,36 @@ void OledDisplay::SetupUI_128x64() {
 
     auto screen = lv_screen_active();
 
-    // Black OLED background
+    // پس‌زمینه کاملاً مشکی
     lv_obj_set_style_bg_color(screen, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, 0);
     lv_obj_set_style_text_color(screen, lv_color_white(), 0);
+    lv_obj_set_style_border_width(screen, 0, 0);
+    lv_obj_set_style_pad_all(screen, 0, 0);
 
-    /* Main container */
+    // ظرف اصلی
     container_ = lv_obj_create(screen);
     lv_obj_set_size(container_, LV_HOR_RES, LV_VER_RES);
     lv_obj_set_style_bg_opa(container_, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(container_, 0, 0);
     lv_obj_set_style_pad_all(container_, 0, 0);
-    lv_obj_set_style_pad_row(container_, 0, 0);
+    lv_obj_set_style_radius(container_, 0, 0);
     lv_obj_set_flex_flow(container_, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_scrollbar_mode(container_, LV_SCROLLBAR_MODE_OFF);
 
-    /* Top bar: Wi-Fi only */
+    // نوار بالایی: فقط نشانگر وای‌فای
     top_bar_ = lv_obj_create(container_);
     lv_obj_set_size(top_bar_, LV_HOR_RES, 14);
     lv_obj_set_style_bg_opa(top_bar_, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(top_bar_, 0, 0);
     lv_obj_set_style_pad_all(top_bar_, 0, 0);
     lv_obj_set_flex_flow(top_bar_, LV_FLEX_FLOW_ROW);
-    lv_obj_set_flex_align(top_bar_, LV_FLEX_ALIGN_SPACE_BETWEEN,
-                          LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_flex_align(
+        top_bar_,
+        LV_FLEX_ALIGN_SPACE_BETWEEN,
+        LV_FLEX_ALIGN_CENTER,
+        LV_FLEX_ALIGN_CENTER
+    );
     lv_obj_set_scrollbar_mode(top_bar_, LV_SCROLLBAR_MODE_OFF);
 
     network_label_ = lv_label_create(top_bar_);
@@ -230,8 +236,7 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_set_style_text_font(network_label_, icon_font, 0);
     lv_obj_set_style_text_color(network_label_, lv_color_white(), 0);
 
-    // Keep these objects for compatibility with the base display class,
-    // but hide them so they never appear on the OLED.
+    // آیکون‌های دیگر مخفی می‌مانند
     lv_obj_t* right_icons = lv_obj_create(top_bar_);
     lv_obj_set_size(right_icons, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
     lv_obj_set_style_bg_opa(right_icons, LV_OPA_TRANSP, 0);
@@ -242,7 +247,7 @@ void OledDisplay::SetupUI_128x64() {
     mute_label_ = lv_label_create(right_icons);
     battery_label_ = lv_label_create(right_icons);
 
-    /* Hidden status labels */
+    // نوار وضعیت مخفی
     status_bar_ = lv_obj_create(screen);
     lv_obj_set_size(status_bar_, LV_HOR_RES, 16);
     lv_obj_set_style_bg_opa(status_bar_, LV_OPA_TRANSP, 0);
@@ -252,25 +257,33 @@ void OledDisplay::SetupUI_128x64() {
 
     status_label_ = lv_label_create(status_bar_);
     notification_label_ = lv_label_create(status_bar_);
+
     lv_obj_add_flag(status_label_, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(notification_label_, LV_OBJ_FLAG_HIDDEN);
 
-    /* Eyes area */
+    // محل قرارگیری چشم‌ها
     content_ = lv_obj_create(container_);
     lv_obj_set_width(content_, LV_HOR_RES);
     lv_obj_set_flex_grow(content_, 1);
     lv_obj_set_style_bg_opa(content_, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_width(content_, 0, 0);
     lv_obj_set_style_pad_all(content_, 0, 0);
+    lv_obj_set_style_radius(content_, 0, 0);
+
     lv_obj_set_flex_flow(content_, LV_FLEX_FLOW_ROW);
-    lv_obj_set_flex_align(content_, LV_FLEX_ALIGN_CENTER,
-                          LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_flex_align(
+        content_,
+        LV_FLEX_ALIGN_CENTER,
+        LV_FLEX_ALIGN_CENTER,
+        LV_FLEX_ALIGN_CENTER
+    );
+
     lv_obj_set_style_pad_column(content_, 12, 0);
     lv_obj_set_scrollbar_mode(content_, LV_SCROLLBAR_MODE_OFF);
 
-    /* Left eye */
+    // چشم چپ
     left_eye_ = lv_obj_create(content_);
-    lv_obj_set_size(left_eye_, 42, 28);
+    lv_obj_set_size(left_eye_, 46, 32);
     lv_obj_set_style_radius(left_eye_, LV_RADIUS_CIRCLE, 0);
     lv_obj_set_style_bg_color(left_eye_, lv_color_white(), 0);
     lv_obj_set_style_bg_opa(left_eye_, LV_OPA_COVER, 0);
@@ -278,16 +291,16 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_set_style_pad_all(left_eye_, 0, 0);
 
     left_pupil_ = lv_obj_create(left_eye_);
-    lv_obj_set_size(left_pupil_, 12, 12);
+    lv_obj_set_size(left_pupil_, 14, 14);
     lv_obj_set_style_radius(left_pupil_, LV_RADIUS_CIRCLE, 0);
     lv_obj_set_style_bg_color(left_pupil_, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(left_pupil_, LV_OPA_COVER, 0);
     lv_obj_set_style_border_width(left_pupil_, 0, 0);
     lv_obj_center(left_pupil_);
 
-    /* Right eye */
+    // چشم راست
     right_eye_ = lv_obj_create(content_);
-    lv_obj_set_size(right_eye_, 42, 28);
+    lv_obj_set_size(right_eye_, 46, 32);
     lv_obj_set_style_radius(right_eye_, LV_RADIUS_CIRCLE, 0);
     lv_obj_set_style_bg_color(right_eye_, lv_color_white(), 0);
     lv_obj_set_style_bg_opa(right_eye_, LV_OPA_COVER, 0);
@@ -295,23 +308,27 @@ void OledDisplay::SetupUI_128x64() {
     lv_obj_set_style_pad_all(right_eye_, 0, 0);
 
     right_pupil_ = lv_obj_create(right_eye_);
-    lv_obj_set_size(right_pupil_, 12, 12);
+    lv_obj_set_size(right_pupil_, 14, 14);
     lv_obj_set_style_radius(right_pupil_, LV_RADIUS_CIRCLE, 0);
     lv_obj_set_style_bg_color(right_pupil_, lv_color_black(), 0);
     lv_obj_set_style_bg_opa(right_pupil_, LV_OPA_COVER, 0);
     lv_obj_set_style_border_width(right_pupil_, 0, 0);
     lv_obj_center(right_pupil_);
 
-    /* Keep the low-battery objects available, but hidden */
+    // پنجره هشدار باتری مخفی
     low_battery_popup_ = lv_obj_create(screen);
+    lv_obj_set_style_bg_opa(low_battery_popup_, LV_OPA_TRANSP, 0);
+    lv_obj_set_style_border_width(low_battery_popup_, 0, 0);
     lv_obj_add_flag(low_battery_popup_, LV_OBJ_FLAG_HIDDEN);
 
     low_battery_label_ = lv_label_create(low_battery_popup_);
     lv_obj_add_flag(low_battery_label_, LV_OBJ_FLAG_HIDDEN);
 
-    /* Start eye animation */
+    // شروع انیمیشن چشم‌ها
     eyes_timer_ = lv_timer_create(EyesTimerCallback, 100, this);
 }
+
+    
 
 void OledDisplay::EyesTimerCallback(lv_timer_t* timer) {
     auto* self = static_cast<OledDisplay*>(lv_timer_get_user_data(timer));
