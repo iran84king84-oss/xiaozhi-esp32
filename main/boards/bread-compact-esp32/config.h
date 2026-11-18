@@ -29,7 +29,7 @@
 #endif
 
 #define BOOT_BUTTON_GPIO        GPIO_NUM_0
-#define TOUCH_BUTTON_GPIO       GPIO_NUM_5
+#define TOUCH_BUTTON_GPIO       GPIO_NUM_19
 #define ASR_BUTTON_GPIO         GPIO_NUM_19
 #define BUILTIN_LED_GPIO        GPIO_NUM_2
 
