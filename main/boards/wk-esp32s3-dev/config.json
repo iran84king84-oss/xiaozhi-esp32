@@ -1,9 +1,14 @@
 {
-    "type": "wk-esp32s3-dev",
-    "target": "esp32s3",
-    "builds": [
-        {
-            "name": "wk-esp32s3-dev"
-        }
-    ]
+  "type": "wk-esp32s3-dev",
+  "target": "esp32s3",
+  "builds": [
+    {
+      "name": "wk-esp32s3-dev",
+      "sdkconfig_append": [
+        "CONFIG_WK_ESP32S3_DEV_DISPLAY_OLED=y",
+        "CONFIG_OLED_SSD1306_128X64=y",
+        "CONFIG_BOARD_NO_MOTOR_CONTROL=y"
+      ]
+    }
+  ]
 }
