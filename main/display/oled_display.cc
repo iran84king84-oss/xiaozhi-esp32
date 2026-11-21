@@ -397,41 +397,35 @@ void OledDisplay::EyesTimerCallback(lv_timer_t* timer) {
 
 void OledDisplay::UpdateEyes() {
 
-   if (left_eye_ == nullptr || right_eye_ == nullptr ||
-    left_pupil_ == nullptr || right_pupil_ == nullptr) {
-    
+    if (left_eye_ == nullptr  right_eye_ == nullptr 
+        left_pupil_ == nullptr || right_pupil_ == nullptr) {
+        return;
+    }
 
     int eye_height = 32;
 
     switch (eyes_expression_) {
-case 1:
+        case 1:
             eye_height = 25;
             break;
-
         case 2:
             eye_height = 22;
             break;
-
         case 3:
             eye_height = 36;
             break;
-
         case 4:
             eye_height = 13;
             break;
-
         case 5:
             eye_height = 20;
             break;
-
         case 6:
             eye_height = 34;
             break;
-
         case 7:
             eye_height = 29;
             break;
-
         default:
             eye_height = 32;
             break;
@@ -439,11 +433,9 @@ case 1:
 
     // پلک زدن طبیعی
     int blink_phase = eyes_animation_tick_ % 55;
-
     eyes_blinking_ = (blink_phase >= 53);
 
     if (eyes_blinking_) {
-
         lv_obj_set_height(left_eye_, 3);
         lv_obj_set_height(right_eye_, 3);
 
@@ -459,28 +451,20 @@ case 1:
     lv_obj_remove_flag(left_pupil_, LV_OBJ_FLAG_HIDDEN);
     lv_obj_remove_flag(right_pupil_, LV_OBJ_FLAG_HIDDEN);
 
-    // حرکت مردمک ها:
-    // مرکز، چپ، مرکز، راست
-    // هر مرحله حدود 2.5 ثانیه
-
+    // حرکت مردمک ها
     int look_phase = (eyes_animation_tick_ / 25) % 4;
-
     int look_x = 0;
 
     switch (look_phase) {
-
         case 0:
             look_x = 0;
             break;
-
         case 1:
             look_x = -7;
             break;
-
         case 2:
             look_x = 0;
             break;
-
         case 3:
             look_x = 7;
             break;
@@ -497,7 +481,6 @@ case 1:
     lv_obj_set_pos(left_pupil_, pupil_x, pupil_y);
     lv_obj_set_pos(right_pupil_, pupil_x, pupil_y);
 }
-
 void OledDisplay::SetupUI_128x32() {
 
     DisplayLockGuard lock(this);
