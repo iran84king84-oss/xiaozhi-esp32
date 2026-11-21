@@ -179,11 +179,11 @@ void OledDisplay::SetChatMessage(const char* role, const char* content) {
 
     DisplayLockGuard lock(this);
 
-    if (chat_message_label_ == nullptr) {
-        return;
-    }
+   if (chat_message_label_ == nullptr || content == nullptr) {
+    return;
+}
 
-    std::string content_str = content;
+std::string content_str = content;
     std::replace(content_str.begin(), content_str.end(), '\n', ' ');
 
     lv_anim_delete(chat_message_label_, nullptr);
