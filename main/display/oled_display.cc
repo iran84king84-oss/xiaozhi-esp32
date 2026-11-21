@@ -397,7 +397,7 @@ void OledDisplay::EyesTimerCallback(lv_timer_t* timer) {
 
 void OledDisplay::UpdateEyes() {
 
-    if (left_eye_ == nullptr  right_eye_ == nullptr 
+    if (left_eye_ == nullptr || right_eye_ == nullptr 
         left_pupil_ == nullptr || right_pupil_ == nullptr) {
         return;
     }
@@ -621,7 +621,7 @@ bool OledDisplay::SetEmotion(const char* emotion) {
 
     std::string value = emotion;
 
-    if (value == "happy"  value == "love"  value == "excited") {
+    if (value == "happy" || value == "love"  value == "excited") {
         eyes_expression_ = 1;
     }
     else if (value == "sad") {
