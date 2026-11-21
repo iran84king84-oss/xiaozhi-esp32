@@ -397,10 +397,9 @@ void OledDisplay::EyesTimerCallback(lv_timer_t* timer) {
 
 void OledDisplay::UpdateEyes() {
 
-    if (left_eye_ == nullptr || right_eye_ == nullptr 
-        left_pupil_ == nullptr || right_pupil_ == nullptr) {
-        return;
-    }
+   if (left_eye_ == nullptr || right_eye_ == nullptr ||
+    left_pupil_ == nullptr || right_pupil_ == nullptr) {
+    
 
     int eye_height = 32;
 
@@ -621,9 +620,7 @@ bool OledDisplay::SetEmotion(const char* emotion) {
 
     std::string value = emotion;
 
-    if (value == "happy" || value == "love"  value == "excited") {
-        eyes_expression_ = 1;
-    }
+   if (value == "happy" || value == "love" || value == "excited") {
     else if (value == "sad") {
         eyes_expression_ = 2;
     }
