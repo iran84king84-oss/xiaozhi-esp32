@@ -74,6 +74,7 @@ class WkEsp32s3Dev : public WifiBoard {
 private:
  
     Button boot_button_;
+    Button touch_button_;
     // LcdDisplay* display_;
     Display* display_ = nullptr;
     i2c_master_bus_handle_t display_i2c_bus_;
