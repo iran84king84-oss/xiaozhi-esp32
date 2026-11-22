@@ -830,7 +830,12 @@ void Application::HandleToggleChatEvent() {
 
         return;
     }
-
+// اگر هنگام اتصال دوباره لمس شد، فرمان را نگه دار
+if (state == kDeviceStateConnecting) {
+    pending_toggle_chat_ = true;
+    ESP_LOGI(TAG, "Toggle queued until connection completes");
+    return;
+}
     // توقف اعلان
     if (state == kDeviceStateNotifying) {
         StopNotification();
@@ -894,6 +899,10 @@ void Application::HandleToggleChatEvent() {
         }
 
         SetListeningMode(mode);
+        if (pending_toggle_chat_) {
+    pending_toggle_chat_ = false;
+    HandleToggleChatEvent();
+}
     }
 }
 void Application::ContinueOpenAudioChannel(ListeningMode mode) {
