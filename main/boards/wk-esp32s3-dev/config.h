@@ -30,7 +30,7 @@
 #ifdef  CONFIG_BOARD_NO_MOTOR_CONTROL  // 没有电机控制功能的版本
     #define BUILTIN_LED_GPIO        GPIO_NUM_14
     #define BOOT_BUTTON_GPIO        GPIO_NUM_0
-    #define TOUCH_BUTTON_GPIO       GPIO_NUM_NC
+    #define TOUCH_BUTTON_GPIO       GPIO_NUM_4
     #define VOLUME_UP_BUTTON_GPIO   GPIO_NUM_38
     #define VOLUME_DOWN_BUTTON_GPIO GPIO_NUM_39
 
