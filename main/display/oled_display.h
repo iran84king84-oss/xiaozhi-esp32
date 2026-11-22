@@ -31,7 +31,7 @@ lv_obj_t* right_pupil_ = nullptr;
 int eyes_animation_tick_ = 0;
 int eyes_expression_ = 0;
 bool eyes_blinking_ = false;
-
+bool eyes_sleeping_ = false;
 void UpdateEyes();
 static void EyesTimerCallback(lv_timer_t* timer);
 
