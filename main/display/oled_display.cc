@@ -612,7 +612,7 @@ bool OledDisplay::SetEmotion(const char* emotion) {
     }
 
     std::string value = emotion;
-
+    eyes_sleeping_ = (value == "sleepy");
     if (value == "happy" || value == "love" || value == "excited") {
         eyes_expression_ = 1;
     }
