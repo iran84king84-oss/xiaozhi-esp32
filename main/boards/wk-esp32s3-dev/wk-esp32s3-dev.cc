@@ -219,7 +219,8 @@ private:
                                     DISPLAY_SWAP_XY);
     }
 #endif
-    boot_button_.OnClick([this]() {
+  void InitializeButtons() {
+        boot_button_.OnClick([this]() {
             auto& app = Application::GetInstance();
             if (app.GetDeviceState() == kDeviceStateStarting) {
                 EnterWifiConfigMode();
@@ -237,9 +238,7 @@ private:
         volume_up_button_.OnClick([this]() {
             auto codec = GetAudioCodec();
             auto volume = codec->output_volume() + 10;
-            if (volume > 100) {
-                volume = 100;
-            }
+            if (volume > 100) volume = 100;
             codec->SetOutputVolume(volume);
             GetDisplay()->ShowNotification(Lang::Strings::VOLUME + std::to_string(volume));
         });
@@ -252,9 +251,7 @@ private:
         volume_down_button_.OnClick([this]() {
             auto codec = GetAudioCodec();
             auto volume = codec->output_volume() - 10;
-            if (volume < 0) {
-                volume = 0;
-            }
+            if (volume < 0) volume = 0;
             codec->SetOutputVolume(volume);
             GetDisplay()->ShowNotification(Lang::Strings::VOLUME + std::to_string(volume));
         });
@@ -264,7 +261,6 @@ private:
             GetDisplay()->ShowNotification(Lang::Strings::MUTED);
         });
     }
-
     // 物联网初始化，添加对 AI 可见设备
     void InitializeTools() {
         static LampController lamp(LAMP_GPIO);
