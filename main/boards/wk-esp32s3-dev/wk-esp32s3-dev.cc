@@ -218,17 +218,7 @@ private:
                                     DISPLAY_MIRROR_Y,
                                     DISPLAY_SWAP_XY);
     }
-#endif
- touch_button_.OnDoubleClick([this]() {
-    auto& app = Application::GetInstance();
-    app.ToggleChatState();
 
-    if (display_ != nullptr) {
-        static_cast<OledDisplay*>(display_)->SetEmotion("listening");
-    }
-});
-
-       
         volume_up_button_.OnClick([this]() {
             auto codec = GetAudioCodec();
             auto volume = codec->output_volume() + 10;
