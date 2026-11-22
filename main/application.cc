@@ -931,6 +931,11 @@ void Application::ContinueOpenAudioChannel(ListeningMode mode) {
     }
 
     SetListeningMode(mode);
+    // اجرای فرمان تاچ ذخیره شده پس از اتصال
+if (pending_toggle_chat_) {
+    pending_toggle_chat_ = false;
+    HandleToggleChatEvent();
+}
 }
 
 void Application::HandleStartListeningEvent() {
