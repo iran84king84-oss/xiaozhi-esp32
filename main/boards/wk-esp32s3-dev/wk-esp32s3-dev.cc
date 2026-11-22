@@ -218,8 +218,7 @@ private:
                                     DISPLAY_SWAP_XY);
     }
 #endif
-    void InitializeButtons() {
-        boot_button_.OnClick([this]() {
+    boot_button_.OnClick([this]() {
             auto& app = Application::GetInstance();
             if (app.GetDeviceState() == kDeviceStateStarting) {
                 EnterWifiConfigMode();
@@ -228,6 +227,11 @@ private:
             app.ToggleChatState();
         });
 
+        // TTP223 Touch Sensor
+        touch_button_.OnClick([this]() {
+            auto& app = Application::GetInstance();
+            app.ToggleChatState();
+        });
 
         volume_up_button_.OnClick([this]() {
             auto codec = GetAudioCodec();
