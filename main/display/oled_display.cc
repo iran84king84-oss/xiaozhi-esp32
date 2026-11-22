@@ -401,7 +401,17 @@ void OledDisplay::UpdateEyes() {
         left_pupil_ == nullptr || right_pupil_ == nullptr) {
         return;
     }
+// حالت خواب کامل: چشم ها بسته و بدون مردمک
+if (eyes_sleeping_) {
+    lv_obj_set_height(left_eye_, 3);
+    lv_obj_set_height(right_eye_, 3);
 
+    lv_obj_add_flag(left_pupil_, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(right_pupil_, LV_OBJ_FLAG_HIDDEN);
+
+    eyes_blinking_ = false;
+    return;
+}
     int eye_height = 32;
 
     switch (eyes_expression_) {
