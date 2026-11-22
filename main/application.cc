@@ -826,10 +826,7 @@ void Application::HandleToggleChatEvent() {
             });
         } else {
             SetListeningMode(mode);
-            // اجرای فرمان تاچ ذخیره شده پس از اتصال
-if (pending_toggle_chat_) {
-    pending_toggle_chat_ = false;
-    HandleToggleChatEvent();
+           
 }
         }
 
@@ -904,10 +901,7 @@ if (state == kDeviceStateConnecting) {
         }
 
         SetListeningMode(mode);
-        if (pending_toggle_chat_) {
-    pending_toggle_chat_ = false;
-    HandleToggleChatEvent();
-}
+     
     }
 }
 void Application::ContinueOpenAudioChannel(ListeningMode mode) {
