@@ -149,6 +149,7 @@ private:
 
     std::function<void(const std::string&)> mcp_broadcast_callback_;
     bool sleep_mode_ = false;
+    bool pending_toggle_chat_ = false;
     bool has_server_time_ = false;
     bool startup_completed_ = false;
     bool pending_startup_wake_word_hint_ = false;
