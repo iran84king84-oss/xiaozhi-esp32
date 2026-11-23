@@ -826,18 +826,18 @@ void Application::HandleToggleChatEvent() {
             });
         } else {
             SetListeningMode(mode);
-           
-}
         }
 
         return;
     }
-// اگر هنگام اتصال دوباره لمس شد، فرمان را نگه دار
-if (state == kDeviceStateConnecting) {
-    pending_toggle_chat_ = true;
-    ESP_LOGI(TAG, "Toggle queued until connection completes");
-    return;
-}
+
+    // اگر هنگام اتصال دوباره لمس شد، فرمان را نگه دار
+    if (state == kDeviceStateConnecting) {
+        pending_toggle_chat_ = true;
+        ESP_LOGI(TAG, "Toggle queued until connection completes");
+        return;
+    }
+
     // توقف اعلان
     if (state == kDeviceStateNotifying) {
         StopNotification();
@@ -901,7 +901,6 @@ if (state == kDeviceStateConnecting) {
         }
 
         SetListeningMode(mode);
-     
     }
 }
 void Application::ContinueOpenAudioChannel(ListeningMode mode) {
