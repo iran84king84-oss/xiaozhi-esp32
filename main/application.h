@@ -7,6 +7,7 @@
 #include <esp_timer.h>
 
 #include <string>
+#include <string_view>
 #include <mutex>
 #include <deque>
 #include <memory>
