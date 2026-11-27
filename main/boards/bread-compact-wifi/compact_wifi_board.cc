@@ -125,9 +125,9 @@ touch_button_.OnClick([this]() {
 
 // دو لمس: شروع یا توقف مکالمه
 touch_button_.OnDoubleClick([this]() {
+    ESP_LOGI(TAG, "DOUBLE CLICK DETECTED");
     Application::GetInstance().ToggleChatState();
 });
-
 // سه لمس: چشم های متعجب
 touch_button_.OnMultipleClick([this]() {
     if (GetDisplay() != nullptr) {
