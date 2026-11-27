@@ -109,13 +109,31 @@ private:
             }
             app.ToggleChatState();
         });
-        touch_button_.OnPressDown([this]() {
-            Application::GetInstance().StartListening();
-        });
-        touch_button_.OnPressUp([this]() {
-            Application::GetInstance().StopListening();
-        });
+       // لمس کوتاه: چشم های خوشحال
+touch_button_.OnClick([this]() {
+    if (GetDisplay() != nullptr) {
+        GetDisplay()->SetEmotion("happy");
+    }
+});
 
+// دو لمس: شروع یا توقف مکالمه
+touch_button_.OnDoubleClick([this]() {
+    Application::GetInstance().ToggleChatState();
+});
+
+// سه لمس: چشم های متعجب
+touch_button_.OnMultipleClick([this]() {
+    if (GetDisplay() != nullptr) {
+        GetDisplay()->SetEmotion("surprised");
+    }
+}, 3);
+
+// نگه داشتن بیش از ۲ ثانیه: چشم های ناراحت
+touch_button_.OnLongPress([this]() {
+    if (GetDisplay() != nullptr) {
+        GetDisplay()->SetEmotion("sad");
+    }
+});
         volume_up_button_.OnClick([this]() {
             auto codec = GetAudioCodec();
             auto volume = codec->output_volume() + 10;
@@ -155,7 +173,7 @@ private:
 public:
     CompactWifiBoard() :
         boot_button_(BOOT_BUTTON_GPIO),
-        touch_button_(TOUCH_BUTTON_GPIO, true),
+        touch_button_(TOUCH_BUTTON_GPIO, true,3000),
         volume_up_button_(VOLUME_UP_BUTTON_GPIO),
         volume_down_button_(VOLUME_DOWN_BUTTON_GPIO) {
         InitializeDisplayI2c();
