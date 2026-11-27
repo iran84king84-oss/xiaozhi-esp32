@@ -101,6 +101,13 @@ private:
     }
 
     void InitializeButtons() {
+        touch_button_.OnPressDown([]() {
+    ESP_LOGI(TAG, "TOUCH DOWN");
+});
+
+touch_button_.OnPressUp([]() {
+    ESP_LOGI(TAG, "TOUCH UP");
+});
         boot_button_.OnClick([this]() {
             auto& app = Application::GetInstance();
             if (app.GetDeviceState() == kDeviceStateStarting) {
@@ -124,14 +131,14 @@ touch_button_.OnDoubleClick([this]() {
 // سه لمس: چشم های متعجب
 touch_button_.OnMultipleClick([this]() {
     if (GetDisplay() != nullptr) {
-        GetDisplay()->SetEmotion("surprised");
+        GetDisplay()->SetEmotion("sad");
     }
 }, 3);
 
 // نگه داشتن بیش از ۲ ثانیه: چشم های ناراحت
 touch_button_.OnLongPress([this]() {
     if (GetDisplay() != nullptr) {
-        GetDisplay()->SetEmotion("sad");
+        GetDisplay()->SetEmotion("angry");
     }
 });
         volume_up_button_.OnClick([this]() {
