@@ -154,7 +154,7 @@ private:
 
 public:
     CompactWifiBoard() :
-        boot_button_(BOOT_BUTTON_GPIO),
+        boot_button_(BOOT_BUTTON_GPIO, true),
         touch_button_(TOUCH_BUTTON_GPIO),
         volume_up_button_(VOLUME_UP_BUTTON_GPIO),
         volume_down_button_(VOLUME_DOWN_BUTTON_GPIO) {
