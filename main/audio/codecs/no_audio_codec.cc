@@ -264,7 +264,7 @@ int NoAudioCodec::Write(const int16_t* data, int samples) {
             raw_peak = raw_abs;
         }
 
-        int32_t value = bit32_buffer[i] >> 12;
+        int32_t value = bit32_buffer[i] >> 16;
         dest[i] = (value > INT16_MAX) ? INT16_MAX :
                   (value < -INT16_MAX) ? -INT16_MAX :
                   (int16_t)value;
